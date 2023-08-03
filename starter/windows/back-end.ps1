@@ -1,3 +1,3 @@
-cd back-end
+& back-end
 go get
 go run .
