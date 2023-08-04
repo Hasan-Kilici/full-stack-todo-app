@@ -3,6 +3,7 @@ package Handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"todoList/Database"
+	"todoList/Utils"
 )
 
 func HelloHandler(c *fiber.Ctx) error {
@@ -18,7 +19,12 @@ func CreateTask(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Bad request")
 	}
 
-	err := Database.CrateTask(User, form.Task)
+	err := Utils.ValidateTask(form.Task)
+	if err != nil {
+		return c.Status(400).SendString("I can't crate task with paramaters")
+	}
+
+	err = Database.CrateTask(User, form.Task)
 	if err != nil {
 		return c.Status(500).SendString("Task didn't create")
 	}
@@ -76,7 +82,7 @@ func ListAllTasks(c *fiber.Ctx) error {
 	User := c.Params("Token")
 	Tasks, err:= Database.ListAllTasks(User)
 	if err != nil {
-		return c.Status(404).SendString("Tasks not found")
+		return c.Status(404).SendString("Task didn't listed")
 	}
 
 	c.JSON(fiber.Map{
