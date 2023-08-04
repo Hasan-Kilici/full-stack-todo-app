@@ -2,7 +2,7 @@
   import Cookies from "js-cookie";
   let newTask = '';
   let tasks = [];
-
+  let error;
   function GenerateToken(length) {
     let a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_".split("");
     let b = [];
@@ -31,23 +31,30 @@
   }
 
   async function createTask() {
-    const response = await fetch('http://localhost:3000/create/task', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ task: newTask }),
-      credentials: 'include',
-    });
-    if (response.ok) {
-      const data = await response.json();
-      tasks = [...tasks, data.task];
-      newTask = '';
-      window.location.href = "/";
+    if(newTask.startsWith(" ")){
+      error = "Task cannot start with a space";
+    } else if (newTask.length < 5){
+      error = "Task cannot be less than 5 characters";
+    }
+
+    if(!newTask.startsWith(" ") && newTask.length > 5){
+      const response = await fetch('http://localhost:3000/create/task', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ task: newTask }),
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        tasks = [...tasks, data.task];
+        newTask = '';
+        window.location.href = "/";
+      }
     }
   }
-
   async function deleteTask(token) {
     const response = await fetch(`http://localhost:3000/delete/task/${token}`, {
       method: 'DELETE',
@@ -78,7 +85,9 @@
 
 <main>
 	<h1>Todo List</h1>
-
+  {#if error}
+      <div class="error">{error}</div>
+  {/if}
 	<form on:submit|preventDefault={createTask}>
     <div class="flex">
 		  <input type="text" bind:value={newTask} placeholder="Enter your task..." />
