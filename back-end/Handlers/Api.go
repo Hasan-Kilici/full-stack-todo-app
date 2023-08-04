@@ -76,7 +76,7 @@ func ListAllTasks(c *fiber.Ctx) error {
 	User := c.Params("Token")
 	Tasks, err:= Database.ListAllTasks(User)
 	if err != nil {
-		return c.Status(500).SendString("Task didn't listed")
+		return c.Status(404).SendString("Tasks not found")
 	}
 
 	c.JSON(fiber.Map{
