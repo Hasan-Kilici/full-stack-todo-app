@@ -1,8 +1,8 @@
 package Database
 
 type Tasks struct {
-	Token		interface{}
-	Task		interface{}
-	Status		interface{}
-	UserToken 	interface{}
+	Token		string
+	Task		string
+	Status		bool
+	UserToken 	string
 }
